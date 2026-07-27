@@ -1,0 +1,184 @@
+.section-hero{
+    width: 100%;
+    aspect-ratio: 1/1;
+    box-sizing: border-box;
+}
+
+.hero-content{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1/1;
+    background-image: linear-gradient(0deg, rgba(20, 20, 20, 0.5), rgba(20, 20, 20, 0.1)), url('../../assets/parthenon-hero-min.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.heading-hero{
+    text-align: center;
+    color: var(--light-white);
+    font-family: var(--font-secondary);
+    font-size: 32px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+}
+
+.heading-hero strong{
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: var(--secondary-orange);
+}
+
+@keyframes typing {
+    0.0000%, 36.3674% { content: ""; }
+    1.5151%, 34.8515% { content: "h"; }
+    3.0301%, 33.3364% { content: "he"; }
+    4.5452%, 31.8214% { content: "her"; }
+    6.0603%, 30.3063% { content: "heri"; }
+    7.5753%, 28.7913% { content: "herit"; }
+    9.0904%, 27.2762% { content: "herita"; }
+    10.6054%, 25.7612% { content: "heritag"; }
+    12.1205%, 24.2461% { content: "heritage"; }
+    13.6356%, 22.7311% { content: "heritage"; }
+
+    40.9147%, 68.1818% { content: ""; }
+    42.4298%, 66.6667% { content: "c"; }
+    43.9448%, 65.1516% { content: "cu"; }
+    45.4599%, 63.6366% { content: "cul"; }
+    46.9750%, 62.1215% { content: "cult"; }
+    48.4900%, 60.6065% { content: "cultu"; }
+    50.0051%, 59.0914% { content: "culture"; }
+
+    72.7270%, 100.0000% { content: ""; }
+    74.2421%, 98.4849% { content: "e"; }
+    75.7571%, 96.9699% { content: "ea"; }
+    77.2722%, 95.4548% { content: "ear"; }
+    78.7873%, 93.9398% { content: "eart"; }
+    80.3023%, 92.4247% { content: "earth"; }
+    81.8174%, 90.9097% { content: "earth"; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typewriter {
+  --caret: currentcolor;
+}
+
+.typewriter::before {
+  content: "";
+  animation: typing 13.5s infinite;
+}
+
+.typewriter::after {
+  content: "";
+  border-right: 1px solid var(--caret);
+  animation: blink 0.5s linear infinite;
+}
+
+.typewriter.thick::after {
+  border-right: 1ch solid var(--caret);
+}
+
+.typewriter.nocaret::after {
+  border-right: 0;
+}
+
+
+.description-hero{
+    width: 90%;
+    text-align: center;
+    color: var(--light-white);
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 800;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.description-hero strong{
+    color: var(--secondary-orange);
+}
+
+.utils-hero{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+.button-hero{
+    padding: 4px 16px;
+    border-radius: 8px;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.button-hero:hover{
+    background-color: var(--primary-hover-blue);
+}
+
+.button-hero-primary{
+    background-color: var(--primary-blue);
+    color: var(--light-white);
+}
+
+.button-hero-secondary{
+    background-color: transparent;
+    border: 1px solid var(--light-white);
+    color: var(--light-white);
+}
+
+.hero-bottom{
+    background-image: url("../../assets/marble-texture-min.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 5%;
+    box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Desktop Responsive Query */
+@media screen and (min-width: 768px) {
+
+.section-hero{
+    height: 100%;
+    aspect-ratio: unset;
+}
+
+.hero-content{
+    height: 95%;
+    justify-content: center;
+}
+
+.heading-hero{
+    font-size: 64px;
+}
+
+.description-hero{
+    width: 75%;
+    letter-spacing: 4px;
+    font-size: 24px;
+}
+
+.utils-hero{
+    gap: 64px;
+}
+
+.button-hero{
+    padding: 8px 32px;
+    font-size: 24px;
+}
+
+}

@@ -1,0 +1,138 @@
+.section-footer{
+    width: 100%;
+    aspect-ratio: 2/1;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    background-color: var(--text-black);
+    padding: 32px 0;
+}
+
+.footer-container{
+    width: 90%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.footer-column{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.heading-footer{
+    text-transform: capitalize;
+    font-family: var(--font-secondary);
+    color: var(--light-white);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.heading-footer strong{
+    text-transform: uppercase;
+}
+
+.heading-contact{
+    text-transform: uppercase;
+    font-family: var(--font-primary);
+    color: var(--light-white);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.contact-list{
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+}
+
+.contact-item{
+    font-family: var(--font-primary);
+    color: var(--light-white);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.contact-item a{
+    color: var(--light-white);
+    text-decoration: none;
+}
+
+.heading-links{
+    text-transform: uppercase;
+    font-family: var(--font-primary);
+    color: var(--light-white);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.links-list{
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.icon-links{
+    color: var(--light-white);
+    font-size: 13px;
+    transition: color 0.3s;
+}
+
+.icon-links:hover{
+    color: var(--primary-blue);
+}
+
+
+/* Desktop Responsive Query */
+@media screen and (min-width: 768px) {
+
+.section-footer{
+    aspect-ratio: 6/1;
+    padding: 64px 0;
+}
+
+.footer-container{
+    width: 75%;
+}
+
+.heading-footer{
+    font-size: 32px;
+}
+
+.heading-contact{
+    font-size: 24px;
+}
+
+.contact-list{
+    margin-top: 24px;
+}
+
+.contact-item{
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.heading-links{
+    font-size: 24px;
+}
+
+.links-list{
+    margin-top: 24px;
+}
+
+.icon-links{
+    font-size: 16px;
+}
+
+}

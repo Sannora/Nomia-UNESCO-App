@@ -1,0 +1,322 @@
+.loading-screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    overflow:hidden;
+    background:#050816;
+    z-index:9999;
+    opacity:1;
+    transform:scale(1);
+    transition:
+        opacity .55s ease,
+        transform .55s ease,
+        visibility .55s ease;
+}
+
+.loading-screen.hide{
+    opacity:0;
+    transform:scale(1.06);
+    visibility:hidden;
+    pointer-events:none;
+}
+
+.loading-screen.hide .loading-earth{
+    transform:
+        scale(1.12)
+        rotate(12deg);
+    opacity:0;
+    transition:
+        transform .65s cubic-bezier(.19,.89,.32,1),
+        opacity .45s ease;
+}
+
+.loading-screen.hide .loading-content{
+    opacity:0;
+    transform:translateY(18px);
+    transition:
+        transform .5s ease,
+        opacity .4s ease;
+}
+
+.loading-screen.hide .earth-glow{
+    transform:scale(1.4);
+    opacity:0;
+    transition:
+        transform .8s ease,
+        opacity .45s ease;
+}
+
+.gradient-overlay{
+    position:absolute;
+    inset:-60%;
+    background:
+    linear-gradient(
+        135deg,
+        #020617 0%,
+        #071A36 15%,
+        #123A74 28%,
+        #4FA6FF 43%,
+        #B9E5FF 50%,
+        #FFE7A6 58%,
+        #FFB45F 70%,
+        #D2645C 82%,
+        #1A2143 100%
+    );
+    background-size:500% 500%;
+    filter:blur(130px);
+    animation:
+        earthCycle 22s ease-in-out infinite;
+    opacity:.95;
+}
+
+@keyframes earthCycle{
+    0%{
+        background-position:0% 50%;
+        transform:
+            translateX(-10%)
+            translateY(-4%)
+            rotate(0deg);
+    }
+    25%{
+        background-position:35% 45%;
+    }
+    50%{
+        background-position:100% 50%;
+        transform:
+            translateX(8%)
+            translateY(4%)
+            rotate(8deg);
+    }
+    75%{
+
+        background-position:65% 55%;
+    }
+    100%{
+        background-position:0% 50%;
+        transform:
+            translateX(-10%)
+            translateY(-4%)
+            rotate(0deg);
+    }
+}
+
+.earth-wrapper{
+    z-index:5;
+}
+
+.loading-earth{
+    width:230px;
+    z-index:5;
+}
+
+.earth-glow{
+    position:absolute;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    background:
+    radial-gradient(
+        rgba(59,130,246,.35),
+        transparent 70%
+    );
+    filter:blur(60px);
+    animation:
+    glowPulse 4s ease-in-out infinite;
+}
+
+.loading-content{
+    margin-top:42px;
+    z-index:5;
+    text-align:center;
+}
+
+.loading-content h1{
+    font-family: var(--font-secondary);
+    color:var(--light-white);
+    font-size:40px;
+    font-weight:700;
+    letter-spacing:4px;
+}
+
+.loading-content p{
+    font-family: var(--font-primary);
+    margin-top:12px;
+    color:rgba(255,255,255,.72);
+    font-size:16px;
+    letter-spacing:2px;
+}
+
+.loading-line{
+    margin-top:36px;
+    width:260px;
+    height:5px;
+    border-radius:999px;
+    overflow:hidden;
+    background:
+    rgba(255,255,255,.08);
+}
+
+.loading-line-fill{
+    height:100%;
+    width:40%;
+    border-radius:999px;
+    background:
+    linear-gradient(
+        90deg,
+        #38BDF8,
+        #2563EB,
+        #1D4ED8
+    );
+    animation:
+    loadingBar 1.8s infinite;
+}
+
+.stars{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    filter:
+    drop-shadow(0 0 2px white)
+    drop-shadow(0 0 6px rgba(255,255,255,.35));
+    animation:
+    starsTwinkle 4s ease-in-out infinite;
+}
+
+.stars-back{
+    opacity:.3;
+    background-image:
+        radial-gradient(white 1px, transparent 1px);
+    background-size:90px 90px;
+    animation:
+        starsSlow 60s linear infinite,
+        starsTwinkle 7s ease-in-out infinite;
+}
+
+.stars-middle{
+    opacity:.5;
+    background-image:
+        radial-gradient(white 1.5px, transparent 1.5px);
+    background-size:140px 140px;
+    animation:
+        starsMedium 40s linear infinite,
+        starsTwinkle 5s ease-in-out infinite;
+}
+
+.stars-front{
+    opacity:.7;
+    background-image:
+        radial-gradient(white 2px, transparent 2px);
+
+    background-size:220px 220px;
+    animation:
+        starsFast 25s linear infinite,
+        starsTwinkle 3s ease-in-out infinite;
+}
+
+@keyframes starsTwinkle{
+    0%{
+        opacity:.45;
+    }
+
+    50%{
+        opacity:.95;
+    }
+    100%{
+        opacity:.45;
+
+    }
+}
+
+@keyframes earthRotate{
+    from{
+        transform:
+        rotate(-18deg)
+        rotate(0deg);
+    }
+    to{
+        transform:
+        rotate(-18deg)
+        rotate(360deg);
+    }
+}
+
+@keyframes earthFloat{
+    0%{
+        transform:
+        translateY(0)
+        rotate(-18deg);
+    }
+    50%{
+        transform:
+        translateY(-12px)
+        rotate(-18deg);
+    }
+    100%{
+        transform:
+        translateY(0)
+        rotate(-18deg);
+    }
+}
+
+@keyframes glowPulse{
+    0%{
+        transform:scale(.95);
+        opacity:.5;
+    }
+    50%{
+        transform:scale(1.12);
+        opacity:.9;
+    }
+    100%{
+        transform:scale(.95);
+        opacity:.5;
+    }
+}
+
+@keyframes loadingBar{
+    0%{
+        transform:translateX(-180%);
+    }
+    100%{
+        transform:translateX(450%);
+    }
+}
+
+@keyframes starsFloat{
+    from{
+        transform:translateY(0);
+    }
+    to{
+        transform:translateY(-120px);
+    }
+}
+
+@keyframes starsSlow{
+    from{
+        transform:translateY(0);
+    }
+    to{
+        transform:translateY(-80px);
+    }
+}
+
+@keyframes starsMedium{
+    from{
+        transform:translateY(0);
+    }
+    to{
+        transform:translateY(-140px);
+    }
+}
+
+@keyframes starsFast{
+    from{
+        transform:translateY(0);
+    }
+    to{
+        transform:translateY(-220px);
+    }
+}

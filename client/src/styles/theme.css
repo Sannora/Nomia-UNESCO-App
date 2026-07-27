@@ -1,0 +1,19 @@
+:root {
+
+    /* Color Palette */
+    --primary-blue: #2E5EAA;
+    --primary-hover-blue: #244A8C;
+    --secondary-orange: #F4A261;
+    --text-black: #1F2937;
+    --light-white: #F5F7FA;
+    --light-alternate: #E4E9F1;
+    --accent-green: #3E8E7E;
+    --background-light: #EBE9E1;
+    --transparent-black: #1F293740;
+    --secondary-gold: #b3ac87;
+
+    /* Typography */
+    --font-primary: 'Open Sans', sans-serif;
+    --font-secondary: 'Merriweather', serif;
+
+}
