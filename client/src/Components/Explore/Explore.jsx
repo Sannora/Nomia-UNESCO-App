@@ -56,7 +56,7 @@ function Explore() {
     const [selectedYear, setSelectedYear] = useState(currentYear);
 
     // Harita teması state'i
-    const [mapStyle, setMapStyle] = useState("lagoon");
+    const [mapStyle, setMapStyle] = useState("jawg-lagoon");
 
     const [mapFocus, setMapFocus] = useState(null);
 
