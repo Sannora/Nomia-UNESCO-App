@@ -16,11 +16,11 @@ function SingleSiteBar({ selectedData, onClose, loading }) {
                 <div 
                 key={selectedData?._id ?? selectedData?.id_no}
                 className="single-site-background"
-                style={{ backgroundImage: `url(${API_BASE}${selectedData?.image})` }}
+                style={{ backgroundImage: `url(${selectedData?.image})`}}
                 />
                     <div className="single-site">
                         <div className="site-image-container">
-                            <img src={`${API_BASE}${selectedData?.image}`} alt="" className="image-site" />
+                            <img src={selectedData?.image} alt="" className="image-site" />
                         </div>
                         <h1 className="heading-site">{selectedData?.name}</h1>
                         <div className="site-details">

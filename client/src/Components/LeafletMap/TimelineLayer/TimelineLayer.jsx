@@ -25,7 +25,7 @@ function TimelineLayer({valid, selectedYear, createClusterIcon, createTooltipHTM
                 eventHandlers={{
                   add: (e) => {
                     const marker = e.target;
-                    const thumbnailUrl = API_BASE + timelineSite.image;
+                    const thumbnailUrl = timelineSite.image;
                     marker.bindTooltip(createTooltipHTML(timelineSite.name, thumbnailUrl), {
                       permanent: false,
                       direction: "top",

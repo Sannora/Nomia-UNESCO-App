@@ -18,7 +18,7 @@ function StandardLayer({valid, selected, setSelected, createClusterIcon, createT
                 eventHandlers={{
                   add: (e) => {
                     const marker = e.target;
-                    const thumbnailUrl = API_BASE + site.image;
+                    const thumbnailUrl = site.image;
                     marker.bindTooltip(createTooltipHTML(site.name, thumbnailUrl), {
                       permanent: false,
                       direction: "top",
