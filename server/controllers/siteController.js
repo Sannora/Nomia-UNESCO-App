@@ -21,33 +21,39 @@ function normalizeInput(input = "") {
 
 // Tüm site'ları getir ya da site'lar arasından filtrele
 export const getSites = async (req, res) => {
-
   try {
-    const {category, region, country, search} = req.query;
+    const { category, region, country, search, limit = 1000 } = req.query;
+
     const filter = {};
 
-    // Kategori filtresi
-    if(category) {
+    if (category) {
       filter.category = category;
     }
 
-    // Bölge filtresi
     if (region && region !== "Worldwide") {
       filter.region = region;
     }
-    
-    // Ülke filtresi
+
     if (country) {
       filter.country = country;
     }
 
-    // Arama çubuğu araması
-    // Mongo filtresi
-    const start = Date.now();
-    let sites = await Site.find(filter);
-    console.log(`Mongo bekleme süresi: ${Date.now() - start}ms`);
+    const parsedLimit = Math.min(
+      Math.max(Number(limit) || 1000, 1),
+      1000
+    );
 
-    // Arama varsa Node tarafında yap
+    const start = Date.now();
+
+    let sites = await Site.find(filter)
+      .select(
+        "id_no name category region country shortDescription dateInscribed danger coordinates image"
+      )
+      .limit(parsedLimit)
+      .lean();
+
+    console.log(`Mongo sorgusu: ${Date.now() - start}ms`);
+
     if (search) {
       const normalizedSearch = normalizeInput(search);
 
@@ -61,11 +67,11 @@ export const getSites = async (req, res) => {
 
   } catch (error) {
     console.log(error);
+
     res.status(500).json({
       message: "Sites could not be fetched.",
-    })
+    });
   }
-
 };
 
 // ID'ye göre tek site getir
