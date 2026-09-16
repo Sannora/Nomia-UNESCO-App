@@ -89,8 +89,8 @@ function Explore() {
     
         // Eğer filtreler tamamen boşsa → params'ı sıfırla
         if (Object.keys(cleaned).length === 0) {
-            if (Object.keys(params).length !== 0) {
-                setParams({});
+            if (params.limit !== 1000 || Object.keys(params).length !== 1) {
+                setParams({ limit: 1000 });
             }
             return;
         }
