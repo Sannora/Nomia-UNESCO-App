@@ -43,7 +43,9 @@ export const getSites = async (req, res) => {
 
     // Arama çubuğu araması
     // Mongo filtresi
+    const start = Date.now();
     let sites = await Site.find(filter);
+    console.log(`Mongo bekleme süresi: ${Date.now() - start}ms`);
 
     // Arama varsa Node tarafında yap
     if (search) {
