@@ -1,0 +1,16 @@
+{
+  "name": "nomia-api",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "nomia_db",
+      "database_name": "nomia-db",
+      "database_id": "31e23a3c-27e0-4dca-88e4-85c724cc4e71",
+      "remote": true
+    }
+  ]
+}

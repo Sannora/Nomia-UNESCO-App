@@ -1,72 +1,104 @@
-import Site from "../models/Site.js";
-import { errorResponse, successResponse } from "../utils/apiResponse.js";
-import path from "path";
-import fs from "fs";
-import { logAdminAction } from "../utils/logger.js";
+import { getD1 } from "../config/d1.js";
+import {
+  uploadSiteImageToCloudinary,
+} from "../utils/cloudinary.js";
 
-// Normalizasyon fonskiyonu
-function normalizeInput(input = "") {
-  return input
-    .toLowerCase()
-    .replace(/[ç]/g, "c")
-    .replace(/[ğ]/g, "g")
-    .replace(/[ı]/g, "i")
-    .replace(/[ö]/g, "o")
-    .replace(/[ş]/g, "s")
-    .replace(/[ü]/g, "u")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
-
-// Tüm site'ları getir ya da site'lar arasından filtrele
 export const getSites = async (req, res) => {
   try {
-    const { category, region, country, search, limit = 1000 } = req.query;
+    const {
+      category,
+      region,
+      country,
+      search,
+      limit = 1000,
+    } = req.query;
 
-    const filter = {};
-
-    if (category) {
-      filter.category = category;
-    }
-
-    if (region && region !== "Worldwide") {
-      filter.region = region;
-    }
-
-    if (country) {
-      filter.country = country;
-    }
+    const db = getD1(req);
 
     const parsedLimit = Math.min(
       Math.max(Number(limit) || 1000, 1),
       1000
     );
 
-    const start = Date.now();
+    const conditions = [];
+    const params = [];
 
-    let sites = await Site.find(filter)
-      .select(
-        "id_no name category region country shortDescription dateInscribed danger coordinates image"
-      )
-      .limit(parsedLimit)
-      .lean();
-
-    console.log(`Mongo sorgusu: ${Date.now() - start}ms`);
-
-    if (search) {
-      const normalizedSearch = normalizeInput(search);
-
-      sites = sites.filter((site) => {
-        const normalizedName = normalizeInput(site.name);
-        return normalizedName.includes(normalizedSearch);
-      });
+    if (category) {
+      conditions.push("category = ?");
+      params.push(category);
     }
 
-    res.status(200).json(sites);
+    if (region && region !== "Worldwide") {
+      conditions.push("region = ?");
+      params.push(region);
+    }
 
+    if (country) {
+      conditions.push("country = ?");
+      params.push(country);
+    }
+
+    if (search) {
+      conditions.push(
+        "LOWER(name) LIKE LOWER(?)"
+      );
+      params.push(`%${search}%`);
+    }
+
+    const whereClause =
+      conditions.length > 0
+        ? `WHERE ${conditions.join(" AND ")}`
+        : "";
+
+    const query = `
+      SELECT
+        id,
+        id_no,
+        name,
+        category,
+        region,
+        country,
+        shortDescription,
+        dateInscribed,
+        danger,
+        latitude,
+        longitude,
+        image
+      FROM sites
+      ${whereClause}
+      LIMIT ?
+    `;
+
+    params.push(parsedLimit);
+
+    const result = await db
+      .prepare(query)
+      .bind(...params)
+      .all();
+
+    const sites = result.results.map((site) => ({
+      _id: site.id,
+      id_no: site.id_no,
+      name: site.name,
+      category: site.category,
+      region: site.region,
+      country: site.country,
+      shortDescription: site.shortDescription,
+      dateInscribed: site.dateInscribed,
+      danger: Boolean(site.danger),
+      coordinates: {
+        lat: site.latitude,
+        long: site.longitude,
+      },
+      image: site.image,
+    }));
+
+    res.status(200).json(sites);
   } catch (error) {
-    console.log(error);
+    console.error(
+      "Sites fetch error:",
+      error
+    );
 
     res.status(500).json({
       message: "Sites could not be fetched.",
@@ -74,128 +106,198 @@ export const getSites = async (req, res) => {
   }
 };
 
-// ID'ye göre tek site getir
 export const getSiteById = async (req, res) => {
   try {
-    const singleSite = await Site.findById(req.params.id);
-    if (!singleSite) {
-      return res.status(404).json({ message: "Site not found." });
+    const { id } = req.params;
+
+    const db = getD1(req);
+
+    const result = await db
+      .prepare(`
+        SELECT
+          id,
+          id_no,
+          name,
+          category,
+          region,
+          country,
+          shortDescription,
+          longDescription,
+          dateInscribed,
+          danger,
+          latitude,
+          longitude,
+          image
+        FROM sites
+        WHERE id = ?
+      `)
+      .bind(id)
+      .first();
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Site not found.",
+      });
     }
-    res.status(200).json(singleSite);
+
+    const site = {
+      _id: result.id,
+      id_no: result.id_no,
+      name: result.name,
+      category: result.category,
+      region: result.region,
+      country: result.country,
+      shortDescription: result.shortDescription,
+      longDescription: result.longDescription,
+      dateInscribed: result.dateInscribed,
+      danger: Boolean(result.danger),
+      coordinates: {
+        lat: result.latitude,
+        long: result.longitude,
+      },
+      image: result.image,
+    };
+
+    res.status(200).json(site);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(
+      "Site fetch error:",
+      error
+    );
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// Ülkeler listesini çek
 export const getCountries = async (req, res) => {
   try {
-    const countries = await Site.distinct("country");
-    res.status(200).json(countries)
-  } catch (error) {
-    res.status(500).json({message: error.message});
-  }
-}
+    const db = getD1(req);
 
-// Site görseli ekle
+    const result = await db
+      .prepare(`
+        SELECT DISTINCT country
+        FROM sites
+        WHERE country IS NOT NULL
+          AND country != ''
+        ORDER BY country ASC
+      `)
+      .all();
+
+    const countries = result.results.map(
+      (row) => row.country
+    );
+
+    res.status(200).json(countries);
+  } catch (error) {
+    console.error(
+      "Countries fetch error:",
+      error
+    );
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 export const addSiteImage = async (req, res) => {
   try {
-    // Görsel eklenecek site'ın ID'si
-    const siteId = req.params.id;
+    const { id } = req.params;
 
-    // Site var mı kontrol et
-    const site = await Site.findById(siteId);
+    const db = getD1(req);
+
+    const site = await db
+      .prepare(`
+        SELECT
+          id,
+          id_no,
+          name,
+          image
+        FROM sites
+        WHERE id = ?
+      `)
+      .bind(id)
+      .first();
+
     if (!site) {
-      return errorResponse(res, "Site bulunamadı.", 404);
+      return res.status(404).json({
+        message: "Site not found.",
+      });
     }
 
-    // Dosya geldi mi?
     if (!req.file) {
-      return errorResponse(req, "Dosya yüklenmedi.", 400);
-    }
-
-    // Eski görsel varsa sil
-    if (site.image) {
-      const oldImagePath = path.join(process.cwd(), site.image);
-      fs.unlink(oldImagePath, (err) => {
-        if (err) {
-          console.warn("Eski görsel silinirken hata oluştu:", err.message);
-        }
+      return res.status(400).json({
+        message: "Image file is required.",
       });
     }
 
-    // Dosya yolu
-    site.imagePath = `/uploads/sites/${req.file.filename}`;
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/avif",
+    ];
 
-    // Veritabanını güncelle
-    site.image = imagePath;
-
-    //Kaydet
-    await site.save();
-
-    // Kaydı logla
-    await logAdminAction(
-      "SITE_IMAGE_UPDATED",
-      site._id,
-      { image: imagePath }
-    );
-
-    // Standart yanıt
-    return successResponse(
-      res,
-      {
-        siteId: site._id,
-        imageUrl: imagePath,
-      },
-      "Görsel baraşıyla yüklendi."
-    );
-  } catch (error) {
-    console.error("Görsel yüklenirken hatayla karşılaştı:", error);
-    return errorResponse(res, "Görsel yüklenirken hata oluştu.")
-
-  }
-}
-
-// Çoklu görsel yükleme
-export const addBulkSiteImages = async (req, res) => {
-  try {
-    const { mappings } = req.body;
-    const files = req.files;
-
-    if (!files || files.length === 0) {
-      return errorResponse(res, "Dosya bulunamadı.", 400);
-    }
-
-    const parsedMappings = JSON.parse(mappings);
-    const results = [];
-
-    for (const file of files) {
-      const siteId = parsedMappings[file.originalname];
-      if (!siteId) continue;
-
-      const site = await Site.findById(siteId);
-      if (!site) continue;
-
-      // Eski görsel sil
-      if (site.image) {
-        const oldPath = path.join(process.cwd(), site.image);
-        fs.unlink(oldPath, () => {});
-      }
-
-      const imagePath = `/uploads/sites/${file.filename}`;
-      site.image = imagePath;
-      await site.save();
-
-      results.push({
-        siteId,
-        imageUrl: imagePath,
+    if (
+      !allowedTypes.includes(
+        req.file.mimetype
+      )
+    ) {
+      return res.status(400).json({
+        message:
+          "Only JPEG, PNG, WebP and AVIF images are allowed.",
       });
     }
 
-    return successResponse(res, results, "Bulk upload tamamlandı.");
+    if (
+      req.file.size >
+      10 * 1024 * 1024
+    ) {
+      return res.status(400).json({
+        message:
+          "Image size cannot exceed 10 MB.",
+      });
+    }
 
+    const publicId = `site-${site.id_no}`;
+
+    const cloudinary =
+      req.app.locals.getCloudinaryConfig();
+
+    const uploadResult =
+      await uploadSiteImageToCloudinary({
+        file: req.file,
+        publicId,
+        cloudinary,
+      });
+
+    const imageUrl =
+      uploadResult.secure_url;
+
+    await db
+      .prepare(`
+        UPDATE sites
+        SET image = ?
+        WHERE id = ?
+      `)
+      .bind(imageUrl, id)
+      .run();
+
+    res.status(200).json({
+      message:
+        "Image uploaded successfully.",
+      image: imageUrl,
+    });
   } catch (error) {
-    console.error(error);
-    return errorResponse(res, "Bulk upload sırasında hata.");
+    console.error(
+      "Site image upload error:",
+      error
+    );
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };

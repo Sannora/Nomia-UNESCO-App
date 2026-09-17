@@ -1,16 +1,30 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
 
-dotenv.config();
+let client;
+let db;
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("MongoDB Connected to Heritage-Sites")
-    } catch (error) {
-        console.log("Mongo Error:", error);
-        process.exit(1);
-    }
-}
+  if (db) {
+    return db;
+  }
+
+  try {
+    client = new MongoClient(process.env.MONGO_URI);
+
+    await client.connect();
+
+    db = client.db("Heritage-Sites");
+
+    console.log(
+      "MongoDB Connected to:",
+      db.databaseName
+    );
+
+    return db;
+  } catch (error) {
+    console.error("Mongo Error:", error);
+    throw error;
+  }
+};
 
 export default connectDB;

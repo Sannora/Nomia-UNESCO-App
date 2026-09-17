@@ -1,26 +1,19 @@
-import multer from 'multer';
-import path from 'path';
+import multer from "multer";
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/sites");
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        const uniqueName = `site-${Date.now()}${ext}`;
-        cb(null, uniqueName);
-    },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-        cb(null, true);
-    } else{
-        cb(new Error("Sadece görsel dosyalar"), false);
-    }
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Sadece görsel dosyalar yüklenebilir."), false);
+  }
 };
 
 export const uploadSiteImage = multer({
-    storage,
-    fileFilter
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
 });

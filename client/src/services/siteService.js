@@ -17,17 +17,30 @@ export const fetchCountries = () => {
     });
 }
 
-export const uploadSiteImage = (siteId, imageFile) => {
+export const uploadSiteImage = (
+  siteId,
+  imageFile,
+  adminSecret
+) => {
   const formData = new FormData();
-  formData.append("image", imageFile);
 
-  return axiosClient.post(
-    `/sites/${siteId}/image`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  ).then(res => res.data);
+  formData.append(
+    "image",
+    imageFile
+  );
+
+  return axiosClient
+    .post(
+      `/sites/${siteId}/image`,
+      formData,
+      {
+        headers: {
+          "Content-Type":
+            "multipart/form-data",
+          Authorization:
+            `Bearer ${adminSecret}`,
+        },
+      }
+    )
+    .then((res) => res.data);
 };
